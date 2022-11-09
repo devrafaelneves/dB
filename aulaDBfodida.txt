@@ -1,0 +1,106 @@
+/*
+3 QUESTOES, AS DUAS PRIMEIRAS PRA APARECER A ENTIDADE E O VALOR DE CADA, TANTO EM CREDITO E DEBITO
+A TERCEIRA É A PERGUNTA O SALDO, QUE NO CASO É O VALOR DE SALDO MENOS O CREDITO QUE ELE TEM;
+
+VAMOS APRENDER USAR O "UNION" QUE SERVE PARA UNIR DOIS SQL's;
+-Ele permite que separem as colunas quando for fazer o relatório de QuerySQL;
+
+
+------------UNION------------
+	*MESMO NUMERO DE ELEMENTOS;
+	*MESMA ORDEM DE ELEMENTOS;
+	
+------------IF---------------
+IF (condicao, true, false)
+	EXEMPLO = IF  (ativo=1, "ativo", "inativo")
+
+*/ 
+
+/*SELECT 
+CONTAS.valor,
+	IF (CONTAS.TIPO = "cred", "credito", "debito") AS tipo
+FROM contas */
+
+/* O 'IF' AJUDA AS DUAS QUESTOES FICAR MAIS RESUMIDA EM QUESTAO DE LINHAS
+SELECT 
+	entidades.nome,
+	if (contas.tipo = "deb", contas.valor, 0) AS debito,
+	if (contas.tipo = "cred", contas.valor, 0) AS credito
+FROM contas
+INNER JOIN entidades 
+ON (contas.id_entidades = entidades.id_entidades)
+*/
+
+
+SELECT 
+	entidades.id,
+	entidades.nome,
+	entidades.cpf
+	if(entidades.`status`= 0, "ativo", "inativo") AS status
+FROM entidades
+
+
+/*TERCEIRA QUESTAO INTEIRA*/
+SELECT 
+	saldo.nome,
+	SUM(saldo.credito) AS credito,
+	SUM(saldo.debito) AS  debito,
+	SUM(saldo.credito) - SUM(saldo.debito) AS saldo
+FROM
+
+(
+	
+/*PRIMEIRA PARTE DA TERCEIRA QUESTAO*/
+SELECT 
+	entidades.nome,
+	contas.valor AS debito,
+				/*contas.tipo, NAO PRECISO MAIS POR CAUSA DO 0 AS E TAL*/
+	0 AS credito
+FROM
+	contas
+INNER JOIN entidades
+ON (contas.id_entidades = entidades.id_entidades)
+WHERE contas.tipo = "deb"
+
+
+UNION 
+
+
+SELECT 
+	entidades.nome,
+	0 AS debito,	/*tem que ser na ordem CERTA pra aparecer certo, se colocar abaixo do contas valor ali vai dar errado*/
+	contas.valor AS credito
+				/*contas.tipo, NAO PRECISO MAIS POR CAUSA DO 0 AS E TAL*/
+FROM
+	contas
+INNER JOIN entidades 
+ON (contas.id_entidades = entidades.id_entidades)
+WHERE contas.tipo = "cred"
+)
+AS saldo
+GROUP BY nome 
+
+
+
+/*
+PRIMEIRA E A SEGUNDA QUESTÃO BASICAMENTE
+SELECT 
+
+entidades.nome,
+sum(contas.valor),
+contas.tipo
+
+FROM
+contas
+
+INNER JOIN entidades ON (contas.id_entidades = entidades.id_entidades)
+GROUP BY entidades.nome
+*/
+
+
+
+/*WHERE contas.tipo = "cred"*/
+
+
+
+
